@@ -27,13 +27,17 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     RunGuard.cpp \
-    SharedMemoryThread.cpp
+    SharedMemoryThread.cpp \
+    SerializerBase.cpp \
+    InstanceControl.cpp
 
 HEADERS += \
         mainwindow.h \
     RunGuard.h \
     SharedMemoryThread.h \
-    SystemSemaphoreReleaser.h
+    SystemSemaphoreReleaser.h \
+    SerializerBase.h \
+    InstanceControl.h
 
 FORMS += \
         mainwindow.ui
