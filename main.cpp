@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
         if ( argc > 1 ) {
             runGuard.sendFileToOpen(argv[1]);
         }
-        return false;
+        return 0;
     }
     QApplication a(argc, argv);
     MainWindow w;

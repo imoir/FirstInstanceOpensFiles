@@ -44,6 +44,7 @@ RunGuard::~RunGuard() {
         m_sharedMemoryThread->requestInterruption();
         m_memorySignal.release();
         m_sharedMemoryThread->wait();
+        delete m_sharedMemoryThread;
     }
 }
 
@@ -105,7 +106,6 @@ void RunGuard::runFileOpenThread() {
     if ( m_sharedMemoryThread == nullptr ) {
         m_sharedMemoryThread = new SharedMemoryThread(m_memoryLockKey, m_sharedMemoryKey, m_memorySignalKey);
         QObject::connect(m_sharedMemoryThread, &SharedMemoryThread::fileToOpen, this, &RunGuard::OpenFileReceivedEvent);
-        QObject::connect(m_sharedMemoryThread, SIGNAL(finished()), m_sharedMemoryThread, SLOT(deleteLater()));
         m_sharedMemoryThread->start();
     }
 }
