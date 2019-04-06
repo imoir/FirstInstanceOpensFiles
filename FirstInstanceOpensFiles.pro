@@ -6,6 +6,8 @@
 
 QT       += core gui
 
+win32:LIBS += -luser32
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = FirstInstanceOpensFiles
@@ -28,8 +30,7 @@ SOURCES += \
         mainwindow.cpp \
     RunGuard.cpp \
     SharedMemoryThread.cpp \
-    SerializerBase.cpp \
-    InstanceControl.cpp
+    SerializerBase.cpp
 
 HEADERS += \
         mainwindow.h \

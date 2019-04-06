@@ -4,6 +4,7 @@
 #include <QCryptographicHash>
 #include <QDataStream>
 
+#include "InstanceControl.h"
 #include "SharedMemoryThread.h"
 #include "SystemSemaphoreReleaser.h"
 #include "Windows.h"
@@ -72,8 +73,8 @@ bool RunGuard::tryToRun() {
         SystemSemaphoreReleaser releaser(m_memoryLock);
         result = m_sharedMemory.create(m_memorySize);
         if ( result ) {
-            QStringList fileList;
-            SharedMemoryThread::WriteStringListToShareMemory(m_sharedMemory, fileList);
+            InstanceControl instanceControl;
+            SharedMemoryThread::WriteInstanceControlToShareMemory(m_sharedMemory, instanceControl);
         }
     }
     if ( !result ) {
@@ -93,17 +94,30 @@ void RunGuard::release() {
 void RunGuard::sendFileToOpen(const QString &filename) {
     SystemSemaphoreReleaser releaser(m_memoryLock);
     if ( m_sharedMemory.attach() ) {
-        QStringList fileList = SharedMemoryThread::ReadStringListFromShareMemory(m_sharedMemory);
+        InstanceControl instanceControl = SharedMemoryThread::ReadInstanceControlFromShareMemory(m_sharedMemory);
+        QStringList fileList = instanceControl.getFilenameList();
         fileList.append(filename);
+        instanceControl.setFilenameList(fileList);
         // If there isn't enough room in shared memory for the new filename, it simply isn't sent
-        if (SharedMemoryThread::WriteStringListToShareMemory(m_sharedMemory, fileList)) {
+        if (SharedMemoryThread::WriteInstanceControlToShareMemory(m_sharedMemory, instanceControl)) {
+#if defined(Q_OS_WIN)
+            SetForegroundWindow((HWND)instanceControl.getWindowsHandle());
+#endif // Q_OS_WIN
             m_memorySignal.release();
         }
     }
 }
 
-void RunGuard::runFileOpenThread() {
+void RunGuard::runFileOpenThread(WId winId) {
     if ( m_sharedMemoryThread == nullptr ) {
+        {
+            SystemSemaphoreReleaser releaser(m_memoryLock);
+            if ( m_sharedMemory.isAttached() ) {
+                InstanceControl instanceControl = SharedMemoryThread::ReadInstanceControlFromShareMemory(m_sharedMemory);
+                instanceControl.setWindowsHandle(winId);
+                SharedMemoryThread::WriteInstanceControlToShareMemory(m_sharedMemory, instanceControl);
+            }
+        }
         m_sharedMemoryThread = new SharedMemoryThread(m_memoryLockKey, m_sharedMemoryKey, m_memorySignalKey);
         QObject::connect(m_sharedMemoryThread, &SharedMemoryThread::fileToOpen, this, &RunGuard::OpenFileReceivedEvent);
         m_sharedMemoryThread->start();

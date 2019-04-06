@@ -4,6 +4,7 @@
 #include <QThread>
 
 class QSharedMemory;
+class InstanceControl;
 
 class SharedMemoryThread : public QThread
 {
@@ -12,8 +13,8 @@ class SharedMemoryThread : public QThread
 public:
     SharedMemoryThread(const QString &memoryLockKey, const QString &sharedMemoryKey, const QString &memorySignalKey);
 
-    static QStringList ReadStringListFromShareMemory(QSharedMemory &sharedMemory);
-    static bool WriteStringListToShareMemory(QSharedMemory &sharedMemory, const QStringList &list);
+    static InstanceControl ReadInstanceControlFromShareMemory(QSharedMemory &sharedMemory);
+    static bool WriteInstanceControlToShareMemory(QSharedMemory &sharedMemory, const InstanceControl &instanceControl);
 
 signals:
     void fileToOpen(const QString &filename);

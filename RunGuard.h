@@ -6,6 +6,7 @@
  * https://stackoverflow.com/a/28172162
  */
 
+#include <qwindowdefs.h>
 #include <QObject>
 #include <QSharedMemory>
 #include <QSystemSemaphore>
@@ -24,7 +25,7 @@ public:
     bool tryToRun();
     void release();
     void sendFileToOpen(const QString &filename);
-    void runFileOpenThread();
+    void runFileOpenThread(WId winId);
 
 signals:
     void OpenFileReceivedEvent(QString filename);

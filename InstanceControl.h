@@ -8,17 +8,19 @@
 class InstanceControl : public SerializerBase
 {
     Q_OBJECT
-    Q_PROPERTY(uint64_t m_windowsHandle READ getWindowsHandle WRITE setWindowsHandle)
+    Q_PROPERTY(quint64 m_windowsHandle READ getWindowsHandle WRITE setWindowsHandle)
     Q_PROPERTY(QStringList m_filenameList READ getFilenameList WRITE setFilenameList)
 public:
-    InstanceControl();
-    uint64_t getWindowsHandle() const { return m_windowsHandle; }
-    void setWindowsHandle(uint64_t newId) { m_windowsHandle = newId; }
+    InstanceControl() : m_windowsHandle(0) { }
+    InstanceControl(const InstanceControl &ic) : m_windowsHandle(ic.getWindowsHandle()), m_filenameList(ic.getFilenameList())  { }
+    quint64 getWindowsHandle() const { return m_windowsHandle; }
+    void setWindowsHandle(quint64 newHandle) { m_windowsHandle = newHandle; }
     QStringList getFilenameList() const { return m_filenameList; }
     void setFilenameList(const QStringList &newFilenameList) { m_filenameList = newFilenameList; }
+    InstanceControl& operator=(InstanceControl other) { m_windowsHandle = other.m_windowsHandle; m_filenameList = other.m_filenameList; return *this; }
 
 private:
-    uint64_t m_windowsHandle;
+    quint64 m_windowsHandle;
     QStringList m_filenameList;
 };
 

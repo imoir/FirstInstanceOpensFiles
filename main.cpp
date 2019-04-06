@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    runGuard.runFileOpenThread();
+    runGuard.runFileOpenThread(w.winId());
     QObject::connect(&runGuard, &RunGuard::OpenFileReceivedEvent, &w, &MainWindow::OpenFile);
 
     return a.exec();
