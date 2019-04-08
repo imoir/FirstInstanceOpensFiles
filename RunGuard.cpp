@@ -23,10 +23,10 @@ namespace {
 
 RunGuard::RunGuard(const QString& key, int memSize)
     : m_key(key)
-    , m_memorySize(memSize)
     , m_memoryLockKey(generateKeyHash(m_key, "_memoryLockKey"))
     , m_sharedMemoryKey(generateKeyHash(m_key, "_sharedMemoryKey"))
     , m_memorySignalKey(generateKeyHash(m_key, "_memorySignalKey"))
+    , m_memorySize(memSize)
     , m_sharedMemory(m_sharedMemoryKey)
     , m_memoryLock(m_memoryLockKey, 1)
     , m_memorySignal(m_memorySignalKey, 0)
@@ -101,7 +101,10 @@ void RunGuard::sendFileToOpen(const QString &filename) {
         // If there isn't enough room in shared memory for the new filename, it simply isn't sent
         if (SharedMemoryThread::WriteInstanceControlToShareMemory(m_sharedMemory, instanceControl)) {
 #if defined(Q_OS_WIN)
-            SetForegroundWindow((HWND)instanceControl.getWindowsHandle());
+            if (instanceControl.getWindowsHandle() != 0)
+            {
+                SetForegroundWindow((HWND)instanceControl.getWindowsHandle());
+            }
 #endif // Q_OS_WIN
             m_memorySignal.release();
         }
