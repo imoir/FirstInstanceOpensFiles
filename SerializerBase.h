@@ -3,7 +3,10 @@
 
 #include <QObject>
 
-// taken from https://stackoverflow.com/questions/13835197/serializing-my-custom-class-in-qt
+/*************************
+ * Adapted from Kamil Klimek's (https://stackoverflow.com/users/223880/kamil-klimek) contribution to
+ * https://stackoverflow.com/a/13835444
+ */
 
 class SerializerBase : public QObject
 {
